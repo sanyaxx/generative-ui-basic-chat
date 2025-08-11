@@ -4,6 +4,8 @@ import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
 import { Weather } from '@/components/weather';
 import type { WeatherProps } from '@/components/weather';
+import { Stock } from '@/components/stock';
+import type { StockProps } from '@/components/stock';
 
 export default function Page() {
   const [input, setInput] = useState('');
@@ -19,7 +21,7 @@ export default function Page() {
     <div>
       {messages.map(message => (
         <div key={message.id}>
-          <div>{message.role === 'user' ? 'User: ' : 'AI: '}</div>
+          <div>{message.role}</div>
           <div>
             {message.parts.map((part, index) => {
               if (part.type === 'text') {
@@ -33,7 +35,24 @@ export default function Page() {
                   case 'output-available':
                     return (
                       <div key={index}>
-                         <Weather {...(part.output as WeatherProps)} />
+                        <Weather {...(part.output as WeatherProps)} />
+                      </div>
+                    );
+                  case 'output-error':
+                    return <div key={index}>Error: {part.errorText}</div>;
+                  default:
+                    return null;
+                }
+              }
+
+              if (part.type === 'tool-getStockPrice') {
+                switch (part.state) {
+                  case 'input-available':
+                    return <div key={index}>Loading stock price...</div>;
+                  case 'output-available':
+                    return (
+                      <div key={index}>
+                        <Stock {...(part.output as StockProps)} />
                       </div>
                     );
                   case 'output-error':
@@ -51,9 +70,9 @@ export default function Page() {
 
       <form onSubmit={handleSubmit}>
         <input
+          type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Type a message..."
         />
         <button type="submit">Send</button>
       </form>
