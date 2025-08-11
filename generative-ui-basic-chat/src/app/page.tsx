@@ -2,6 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
+import { Weather } from '@/components/weather';
 
 export default function Page() {
   const [input, setInput] = useState('');
@@ -23,6 +24,24 @@ export default function Page() {
               if (part.type === 'text') {
                 return <span key={index}>{part.text}</span>;
               }
+
+              if (part.type === 'tool-displayWeather') {
+                switch (part.state) {
+                  case 'input-available':
+                    return <div key={index}>Loading weather...</div>;
+                  case 'output-available':
+                    return (
+                      <div key={index}>
+                        <Weather {...part.output} />
+                      </div>
+                    );
+                  case 'output-error':
+                    return <div key={index}>Error: {part.errorText}</div>;
+                  default:
+                    return null;
+                }
+              }
+
               return null;
             })}
           </div>
