@@ -3,6 +3,7 @@
 import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
 import { Weather } from '@/components/weather';
+import type { WeatherProps } from '@/components/weather';
 
 export default function Page() {
   const [input, setInput] = useState('');
@@ -32,7 +33,7 @@ export default function Page() {
                   case 'output-available':
                     return (
                       <div key={index}>
-                        <Weather {...part.output} />
+                         <Weather {...(part.output as WeatherProps)} />
                       </div>
                     );
                   case 'output-error':
